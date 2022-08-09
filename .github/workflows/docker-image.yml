@@ -26,7 +26,7 @@ jobs:
       uses: gittools/actions/gitversion/execute@v0.9.13
       
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
+      run: docker build . --file Dockerfile --tag mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
       
     - name: Push Docker Image
       run: docker push mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
