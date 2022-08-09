@@ -14,17 +14,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
+      with:
+        fetch-depth: 0 # required by gitversion
+        
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
       
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.13
+      uses: gittools/actions/gitversion/setup@latest
       with:
         versionSpec: '5.x'
         
     - name: Determine Version
-      uses: gittools/actions/gitversion/execute@v0.9.13
+      uses: gittools/actions/gitversion/execute@latest
       
     - name: Push Docker Image
       run: docker push mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
