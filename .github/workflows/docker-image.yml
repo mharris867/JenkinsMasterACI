@@ -32,7 +32,7 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
     
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
+      run: docker build . --file Dockerfile --tag mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }} --tag mharris867/jenkinsmasteraci:latest
       
     - name: Push Docker Image
       run: docker push mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
@@ -54,4 +54,38 @@ jobs:
         tag: ${{ env.GITVERSION_SEMVER }}
         name: ${{ env.GITVERSION_INFORMATIONALVERSION }}
         owner: ${{ env.GITHUB_REPOSITORY_OWNER }}
-        commit: ${{ env.GITHUB_SHA }} 
+        commit: ${{ env.GITHUB_SHA }}
+        
+  deploy:
+    name: Deploy to ACI
+    runs-on: windows-latest
+    needs: build
+    steps:
+      # checkout branch
+      - name: git checkout main branch
+        uses: actions/checkout@v3
+
+      # log into Azure
+      - name: "Login via Azure CLI"
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: 'Create Jenkins Master in ACI'
+        uses: 'azure/aci-deploy@v1'
+        with:
+          resource-group: jenkinsaci
+          name: pr-${{github.event.number}}
+          dns-name-label: pr-${{github.event.number}}
+          image: mharris867/jenkinsmasteraci:latest
+          location: westus
+          ports: 8080
+
+      
+      - name: "Wrapping up"
+        run: echo "fqdn=$(az container show -g jenkinsaci -n pr-${{github.event.number}} --query 'ipAddress.fqdn' -o tsv)" >> $GITHUB_ENV
+      
+      - uses: jldeen/add-review-url@releases/v0              
+        with:
+            repo-token: ${{ secrets.GITHUB_TOKEN }}  
+            fqdn: ${{ env.fqdn }}
