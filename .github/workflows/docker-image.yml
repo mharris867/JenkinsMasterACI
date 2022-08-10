@@ -31,9 +31,27 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
     
-    - name: Build and push to Docker Hub
-      uses: docker/build-push-action@v3
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
+      
+    - name: Push Docker Image
+      run: docker push mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
+
+    - name: Set Release RC
+      shell: powershell
+      run: |
+        if ($env:GITHUB_REF_NAME -Like '*master*' -or $env:GITHUB_REF_NAME -Like '*main*' ) {$prerelease = "false"}
+        else {$prerelease = "true"}
+        Add-Content -Path $env:GITHUB_ENV -Value "prerelease=$prerelease"
+        Write-Host "Pre-release Set To: $prerelease"
+
+    - name: Create Release
+      uses: ncipollo/release-action@v1
       with:
-        context: .
-        push: true
-        tags: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}, mharris867/jenkinsmasteraci:latest
+        token: ${{ secrets.GITHUB_TOKEN }}
+        generateReleaseNotes: "true"
+        prerelease: ${{ env.prerelease }}
+        tag: ${{ env.GITVERSION_SEMVER }}
+        name: ${{ env.GITVERSION_INFORMATIONALVERSION }}
+        owner: ${{ env.GITHUB_REPOSITORY_OWNER }}
+        commit: ${{ env.GITHUB_SHA }} 
