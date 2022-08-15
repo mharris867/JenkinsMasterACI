@@ -84,6 +84,8 @@ jobs:
           name: pr-${{github.event.number}}
           dns-name-label: pr-${{github.event.number}}-deploy
           image: mharris867/jenkinsmasteraci
+          registry-username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          registry-password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
           location: 'east us'
           ports: 8080
 
