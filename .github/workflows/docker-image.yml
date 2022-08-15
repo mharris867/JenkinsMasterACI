@@ -82,7 +82,7 @@ jobs:
         with:
           resource-group: jenkinsaci
           name: pr-${{github.event.number}}
-          dns-name-label: pr-${{github.event.number}}-${{GITHUB_HEAD_REF}}
+          dns-name-label: pr-${{github.event.number}}-${{github.head.ref}}
           image: mharris867/jenkinsmasteraci:latest
           location: westus
           ports: 8080
