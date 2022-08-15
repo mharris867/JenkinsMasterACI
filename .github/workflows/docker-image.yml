@@ -81,8 +81,8 @@ jobs:
         uses: 'azure/aci-deploy@v1'
         with:
           resource-group: jenkinsaci
-          name: pr-${{github.event.number}}-deploy
-          dns-name-label: pr-${{github.event.number}}
+          name: pr-${{github.event.number}}
+          dns-name-label: pr-${{github.event.number}}-deploy
           image: mharris867/jenkinsmasteraci:latest
           location: westus
           ports: 8080
