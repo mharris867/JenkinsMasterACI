@@ -63,6 +63,13 @@ jobs:
       # checkout branch
       - name: git checkout main branch
         uses: actions/checkout@v3
+        
+      - name: List Variables
+        shell: powershell
+        run: |
+         Write-Host "Listing Available Environment Variables"
+         get-childitem "env:"
+         Write-Host "------------- End of Variable List -------------------" 
 
       # log into Azure
       - name: "Login via Azure CLI"
