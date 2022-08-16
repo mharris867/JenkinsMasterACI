@@ -75,7 +75,7 @@ jobs:
         name: pr-${{github.event.number}}
         dns-name-label: pr-${{github.event.number}}-deploy
         image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
-        os: windows
+        os-type: Windows
         location: 'east us'
         ports: 8080
 
