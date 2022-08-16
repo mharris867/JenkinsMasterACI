@@ -9,7 +9,7 @@ on:
 jobs:
 
   build:
-    name: Build and Push Image
+    name: Build, Push And Deploy Image
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
@@ -73,7 +73,7 @@ jobs:
       with:
         resource-group: jenkinsaci
         name: pr-${{github.event.number}}
-        dns-name-label: pr-${{github.event.number}}-deploy
+        dns-name-label: pr-${{github.event.number}}-${{ env.GITHUB_HEAD_REF }}
         image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
         os-type: Windows
         location: 'east us'
