@@ -73,7 +73,7 @@ jobs:
       with:
         resource-group: jenkinsaci
         name: pr-${{github.event.number}}
-        dns-name-label: pr-${{github.event.number}}-${{ github.head_ref }}
+        dns-name-label: pr-${{github.event.number}}-${{ github.head_ref || github.ref_name }}
         image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
         os-type: Windows
         location: 'east us'
