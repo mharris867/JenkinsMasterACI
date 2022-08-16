@@ -72,8 +72,8 @@ jobs:
       uses: 'azure/aci-deploy@v1'
       with:
         resource-group: jenkinsaci
-        name: pr-${{github.event.number}}
-        dns-name-label: pr-${{github.event.number}}-${{ github.head_ref || github.ref_name }}
+        name: ${{ env.GitVersion_PreReleaseLabel }}
+        dns-name-label: ${{ env.GitVersion_PreReleaseLabel }}-${{ github.head_ref || github.ref_name }}
         image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
         os-type: Windows
         location: 'east us'
@@ -83,7 +83,7 @@ jobs:
     - name: "Put Link To Deployment In Comments"
       shell: powershell
       run: |
-        $fqdn = (az container show -g jenkinsaci -n pr-${{github.event.number}} --query 'ipAddress.fqdn' -o tsv) + ":8080"
+        $fqdn = (az container show -g jenkinsaci -n ${{ env.GitVersion_PreReleaseLabel }} --query 'ipAddress.fqdn' -o tsv) + ":8080"
         Add-Content -Path $env:GITHUB_ENV -Value "fqdn=$fqdn"
         Write-Host "link to deployment: $fqdn"
       
