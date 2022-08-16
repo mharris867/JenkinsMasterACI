@@ -80,8 +80,12 @@ jobs:
         ports: 8080
 
       
-    - name: "Wrapping up"
-      run: echo "fqdn=$(az container show -g jenkinsaci -n pr-${{github.event.number}} --query 'ipAddress.fqdn' -o tsv)" >> $GITHUB_ENV
+    - name: "put link to deployment in comments"
+      shell: powershell
+      run: |
+        $fqdn = (az container show -g jenkinsaci -n pr-${{github.event.number}} --query 'ipAddress.fqdn' -o tsv) + ":8080"
+        Add-Content -Path $env:GITHUB_ENV -Value "fqdn=$fqdn"
+        Write-Host "link to deployment: $fqdn"
       
     - uses: jldeen/add-review-url@releases/v0              
       with:
