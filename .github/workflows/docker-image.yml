@@ -36,13 +36,17 @@ jobs:
     - name: Push Docker Image
       run: docker push mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
 
-    - name: Set Release RC
+    - name: Set Release Candidate Variables
       shell: powershell
       run: |
         if ($env:GITHUB_REF_NAME -Like '*master*' -or $env:GITHUB_REF_NAME -Like '*main*' ) {$prerelease = "false"}
         else {$prerelease = "true"}
         Add-Content -Path $env:GITHUB_ENV -Value "prerelease=$prerelease"
         Write-Host "Pre-release Set To: $prerelease"
+        $GitVersion_PreReleaseLabel = ($env:GitVersion_PreReleaseLabel).ToLower()
+        Add-Content -Path $env:GITHUB_ENV -Value "GitVersion_PreReleaseLabel_ToLower=$GitVersion_PreReleaseLabel_ToLower"
+        Write-Host "Set GitVersion_PreReleaseLabel_ToLower variable to: $GitVersion_PreReleaseLabel_ToLower"
+        
 
     - name: Create Release
       uses: ncipollo/release-action@v1
@@ -72,8 +76,8 @@ jobs:
       uses: 'azure/aci-deploy@v1'
       with:
         resource-group: jenkinsaci
-        name: ${{ env.GitVersion_PreReleaseLabel }}
-        dns-name-label: ${{ env.GitVersion_PreReleaseLabel }}-${{ github.head_ref || github.ref_name }}
+        name: ${{ env.GitVersion_PreReleaseLabel_ToLower }}
+        dns-name-label: ${{ env.GitVersion_PreReleaseLabel_ToLower }}-${{ github.head_ref || github.ref_name }}
         image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
         os-type: Windows
         location: 'east us'
@@ -83,7 +87,7 @@ jobs:
     - name: "Put Link To Deployment In Comments"
       shell: powershell
       run: |
-        $fqdn = (az container show -g jenkinsaci -n ${{ env.GitVersion_PreReleaseLabel }} --query 'ipAddress.fqdn' -o tsv) + ":8080"
+        $fqdn = (az container show -g jenkinsaci -n ${{ env.GitVersion_PreReleaseLabel_ToLower }} --query 'ipAddress.fqdn' -o tsv) + ":8080"
         Add-Content -Path $env:GITHUB_ENV -Value "fqdn=$fqdn"
         Write-Host "link to deployment: $fqdn"
       
