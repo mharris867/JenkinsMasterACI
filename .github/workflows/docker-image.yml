@@ -80,7 +80,7 @@ jobs:
         ports: 8080
 
       
-    - name: "put link to deployment in comments"
+    - name: "Put Link To Deployment In Comments"
       shell: powershell
       run: |
         $fqdn = (az container show -g jenkinsaci -n pr-${{github.event.number}} --query 'ipAddress.fqdn' -o tsv) + ":8080"
