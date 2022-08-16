@@ -43,7 +43,7 @@ jobs:
         else {$prerelease = "true"}
         Add-Content -Path $env:GITHUB_ENV -Value "prerelease=$prerelease"
         Write-Host "Pre-release Set To: $prerelease"
-        $GitVersion_PreReleaseLabel = ($env:GitVersion_PreReleaseLabel).ToLower()
+        $GitVersion_PreReleaseLabel_ToLower = ($env:GitVersion_PreReleaseLabel).ToLower()
         Add-Content -Path $env:GITHUB_ENV -Value "GitVersion_PreReleaseLabel_ToLower=$GitVersion_PreReleaseLabel_ToLower"
         Write-Host "Set GitVersion_PreReleaseLabel_ToLower variable to: $GitVersion_PreReleaseLabel_ToLower"
         
