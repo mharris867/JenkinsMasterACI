@@ -2,16 +2,15 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "develop" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master", "develop" ]
 
 jobs:
 
   build:
-
+    name: Build, Push And Deploy Image
     runs-on: windows-latest
-
     steps:
     - uses: actions/checkout@v3
       with:
@@ -54,4 +53,41 @@ jobs:
         tag: ${{ env.GITVERSION_SEMVER }}
         name: ${{ env.GITVERSION_INFORMATIONALVERSION }}
         owner: ${{ env.GITHUB_REPOSITORY_OWNER }}
-        commit: ${{ env.GITHUB_SHA }} 
+        commit: ${{ env.GITHUB_SHA }}
+        
+    - name: List Variables
+      shell: powershell
+      run: |
+       Write-Host "Listing Available Environment Variables"
+       get-childitem "env:"
+       Write-Host "------------- End of Variable List -------------------" 
+
+      # log into Azure
+    - name: "Login via Azure CLI"
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+    - name: 'Create Jenkins Master in ACI'
+      uses: 'azure/aci-deploy@v1'
+      with:
+        resource-group: jenkinsaci
+        name: pr-${{github.event.number}}
+        dns-name-label: pr-${{github.event.number}}-${{ github.head_ref }}
+        image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
+        os-type: Windows
+        location: 'east us'
+        ports: 8080
+
+      
+    - name: "put link to deployment in comments"
+      shell: powershell
+      run: |
+        $fqdn = (az container show -g jenkinsaci -n pr-${{github.event.number}} --query 'ipAddress.fqdn' -o tsv) + ":8080"
+        Add-Content -Path $env:GITHUB_ENV -Value "fqdn=$fqdn"
+        Write-Host "link to deployment: $fqdn"
+      
+    - uses: jldeen/add-review-url@releases/v0              
+      with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}  
+          fqdn: ${{ env.fqdn }}
