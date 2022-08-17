@@ -73,7 +73,7 @@ jobs:
       with:
         resource-group: jenkinsaci
         name: ${{ env.GitVersion_EscapedBranchName }}
-        dns-name-label: ${{ github.head_ref || github.ref_name }}
+        dns-name-label: ${{ env.GitVersion_EscapedBranchName }}
         image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
         os-type: Windows
         location: 'east us'
@@ -92,4 +92,3 @@ jobs:
       with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}  
           fqdn: ${{ env.fqdn }}
-          

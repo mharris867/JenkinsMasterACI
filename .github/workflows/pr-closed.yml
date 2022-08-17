@@ -3,10 +3,6 @@ name: Pull Request Closed
 on:
   pull_request:
     types: [closed]
-    
-env:
-  # basic  
-  resourceGroup: jenkinsaci
 
 jobs:
   build:
@@ -15,24 +11,7 @@ jobs:
     steps:
       # checkout branch
     - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0 # required by gitversion
-        
-    - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.13
-      with:
-        versionSpec: '5.x'
-        
-    - name: Determine Version
-      uses: gittools/actions/gitversion/execute@v0.9.13
-        
-    - name: List Variables
-      shell: powershell
-      run: |
-       Write-Host "Listing Available Environment Variables"
-       get-childitem "env:"
-       Write-Host "------------- End of Variable List -------------------" 
-       
+      
       # log into Azure
     - name: "Login via Azure CLI"
       uses: azure/login@v1
@@ -42,4 +21,4 @@ jobs:
     - name: Delete PR Azure Container Instance
       shell: powershell
       run: |
-        az container delete -g $resourceGroup -n pull-${{ github.event.number }}-merge -y
+        az container delete -g jenkinsaci -n pull-${{ github.event.number }}-merge -y
