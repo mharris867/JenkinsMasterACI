@@ -1,0 +1,24 @@
+name: Pull Request Closed
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  build:
+    name: Remove Closed PR Azure Resources
+    runs-on: windows-latest
+    steps:
+      # checkout branch
+    - uses: actions/checkout@v3
+      
+      # log into Azure
+    - name: "Login via Azure CLI"
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Delete PR Azure Container Instance
+      shell: powershell
+      run: |
+        az container delete -g jenkinsaci -n pull-${{ github.event.number }}-merge -y
