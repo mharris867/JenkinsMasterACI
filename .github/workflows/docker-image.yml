@@ -78,7 +78,6 @@ jobs:
         os-type: Windows
         location: 'east us'
         ports: 8080
-
       
     - name: "Put Link To Deployment In Comments"
       if: github.event_name == 'pull_request'
@@ -87,14 +86,10 @@ jobs:
         $fqdn = (az container show -g jenkinsaci -n ${{ env.GitVersion_EscapedBranchName }} --query 'ipAddress.fqdn' -o tsv) + ":8080"
         Add-Content -Path $env:GITHUB_ENV -Value "fqdn=$fqdn"
         Write-Host "link to deployment: $fqdn"    
-    - uses: jldeen/add-review-url@releases/v0              
+        
+    - uses: jldeen/add-review-url@releases/v0 
+      if: github.event_name == 'pull_request'
       with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}  
           fqdn: ${{ env.fqdn }}
           
-  
-    - name: "Clean Pull Request Azure Resources When Merged"
-      if: github.event.pull_request.merged == true
-      shell: powershell
-      run: |
-        az container delete -g $resourceGroup -n pull-${{ github.event.number }}-merge -y
