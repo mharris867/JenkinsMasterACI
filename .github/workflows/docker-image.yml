@@ -92,4 +92,3 @@ jobs:
       with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}  
           fqdn: ${{ env.fqdn }}
-          
