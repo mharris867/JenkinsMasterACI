@@ -42,4 +42,4 @@ jobs:
     - name: Delete PR Azure Container Instance
       shell: powershell
       run: |
-        az container delete -g $resourceGroup -n ${{ env.GitVersion_EscapedBranchName }} -y
+        az container delete -g $resourceGroup -n pull-${{ github.event.number }}-merge -y
