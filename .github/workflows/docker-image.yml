@@ -61,7 +61,13 @@ jobs:
        Write-Host "Listing Available Environment Variables"
        get-childitem "env:"
        Write-Host "------------- End of Variable List -------------------" 
-
+       
+      # log into Azure
+    - name: "Login via Azure CLI"
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
     # Create storage account
     - name: "Create storage account"
       shell: powershell
@@ -71,12 +77,6 @@ jobs:
         $storage_account_key = (az storage account keys list --account-name ${{ env.GitVersion_EscapedBranchName }}acistorage -g jenkinsaci --query '[0].value' -o tsv)
         Add-Content -Path $env:GITHUB_ENV -Value "storage_account_key=$storage_account_key"
         echo "::add-mask::$storage_account_key"
-        
-      # log into Azure
-    - name: "Login via Azure CLI"
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
       
     - name: 'Create Jenkins Master in ACI'
       uses: 'azure/aci-deploy@v1'
