@@ -33,11 +33,6 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
       
-    - name: Scan Docker Image
-      uses: jldeen/container-scan@releases/v1
-      with:
-        image-name: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
-      
     - name: Push Docker Image
       run: docker push mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
 
