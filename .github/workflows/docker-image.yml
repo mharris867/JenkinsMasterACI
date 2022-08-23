@@ -73,7 +73,7 @@ jobs:
       shell: powershell
       run: |
         $storage_account_name = ("${{ env.GitVersion_EscapedBranchName }}" + "acistorage").Replace("-","")
-        az storage account create -n $storage_account_name -g jenkinsaci --sku Premium_LRS --kind FileStorage
+        az storage account create -n $storage_account_name -g jenkinsaci --sku Standard_LRS --kind FileStorage
         $storage_account_key = (az storage account keys list --account-name $storage_account_name -g jenkinsaci --query '[0].value' -o tsv)
         Add-Content -Path $env:GITHUB_ENV -Value "storage_account_name=$storage_account_name"
         Add-Content -Path $env:GITHUB_ENV -Value "storage_account_key=$storage_account_key"
