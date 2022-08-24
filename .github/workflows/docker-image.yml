@@ -100,14 +100,14 @@ jobs:
     - name: 'Create Jenkins Master in Webapp Container'
       uses: 'azure/webapps-deploy@v2'
       with:
-        app-name: jenkinsaci
+        app-name: ${{ env.GitVersion_EscapedBranchName }}
         images: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
       
     - name: "Put Link To Deployment In Comments"
       if: github.event_name == 'pull_request'
       shell: powershell
       run: |
-        $fqdn = (az container show -g jenkinsaci -n ${{ env.GitVersion_EscapedBranchName }} --query 'ipAddress.fqdn' -o tsv) + ":8080"
+        $fqdn = (az container show -g jenkinsaci -n ${{ env.GitVersion_EscapedBranchName }} --query 'ipAddress.fqdn' -o tsv)
         Add-Content -Path $env:GITHUB_ENV -Value "fqdn=$fqdn"
         Write-Host "link to deployment: $fqdn"    
         
