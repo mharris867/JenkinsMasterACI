@@ -31,10 +31,12 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
     
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }} --tag mharris867/jenkinsmasteraci
+      run: docker build . --file Dockerfile --tag mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }} --tag mharris867/jenkinsmasteraci:latest
       
     - name: Push Docker Image
-      run: docker push mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
+      run: | 
+        docker push mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
+        docker push mharris867/jenkinsmasteraci:latest
 
     - name: Set Release Candidate Variables
       shell: powershell
