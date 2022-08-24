@@ -105,7 +105,7 @@ jobs:
     
     - name: 'Mount Storage'
       shell: powershell
-      run: az webapp config storage-account add --resource-group jenkinsaci --name jenkinsaci --storage-type AzureFiles --share-name "${{ env.GitVersion_EscapedBranchName }}files" --account-name ${{ env.storage_account_name }} --access-key "${{ secrets.storage_account_key }}" --mount-path C:\ProgramData\jenkins\jenkinshome
+      run: az webapp config storage-account add --resource-group jenkinsaci --name jenkinsaci --storage-type AzureFiles --custom-id "${{ env.GitVersion_EscapedBranchName }}files" --share-name "${{ env.GitVersion_EscapedBranchName }}files" --account-name ${{ env.storage_account_name }} --access-key ${{ secrets.storage_account_key }} --mount-path C:\ProgramData\jenkins\jenkinshome
       
     - name: "Put Link To Deployment In Comments"
       if: github.event_name == 'pull_request'
