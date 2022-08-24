@@ -82,20 +82,26 @@ jobs:
         echo "::add-mask::$storage_account_key"
       
         
-    - name: 'Create Jenkins Master in ACI'
-      uses: 'azure/aci-deploy@v1'
+#     - name: 'Create Jenkins Master in ACI'
+#       uses: 'azure/aci-deploy@v1'
+#       with:
+#         resource-group: jenkinsaci
+#         name: ${{ env.GitVersion_EscapedBranchName }}
+#         dns-name-label: ${{ env.GitVersion_EscapedBranchName }}
+#         image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
+#         os-type: Windows
+#         location: 'east us'
+#         ports: 8080
+#         azure-file-volume-share-name: ${{ env.GitVersion_EscapedBranchName }}files
+#         azure-file-volume-account-name: ${{ env.storage_account_name }}
+#         azure-file-volume-account-key: ${{ secrets.storage_account_key }}
+#         azure-file-volume-mount-path: C:\ProgramData\jenkins\jenkinshome
+
+    - name: 'Create Jenkins Master in Webapp Container'
+      uses: 'azure/webapps-deploy@v2'
       with:
-        resource-group: jenkinsaci
-        name: ${{ env.GitVersion_EscapedBranchName }}
-        dns-name-label: ${{ env.GitVersion_EscapedBranchName }}
-        image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
-        os-type: Windows
-        location: 'east us'
-        ports: 8080
-        # azure-file-volume-share-name: ${{ env.GitVersion_EscapedBranchName }}files
-        # azure-file-volume-account-name: ${{ env.storage_account_name }}
-        # azure-file-volume-account-key: ${{ secrets.storage_account_key }}
-        # azure-file-volume-mount-path: C:\ProgramData\jenkins\jenkinshome
+        app-name: jenkinsaci
+        images: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
       
     - name: "Put Link To Deployment In Comments"
       if: github.event_name == 'pull_request'
