@@ -53,6 +53,7 @@ jobs:
         Add-Content -Path $env:GITHUB_ENV -Value "prerelease=$prerelease"
         Write-Host "Pre-release Set To: $prerelease"
         $RUNNER_OS_TOLOWER = $env:RUNNER_OS.ToLower()
+        if ($RUNNER_OS_TOLOWER -eq "windows") { $RUNNER_OS_TOLOWER = "win"}
         Add-Content -Path $env:GITHUB_ENV -Value "RUNNER_OS_TOLOWER=$RUNNER_OS_TOLOWER"
         Write-Host "RUNNER_OS_TOLOWER Set To: $RUNNER_OS_TOLOWER"
         
