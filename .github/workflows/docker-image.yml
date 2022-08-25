@@ -62,7 +62,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         generateReleaseNotes: "true"
         prerelease: ${{ env.prerelease }}
-        tag: ${{ env.GITVERSION_SEMVER }}
+        tag: ${{ runner.os }}-${{ env.GITVERSION_SEMVER }}
         name: ${{ runner.os }}-${{ env.GITVERSION_INFORMATIONALVERSION }}
         owner: ${{ env.GITHUB_REPOSITORY_OWNER }}
         commit: ${{ env.GITHUB_SHA }}
