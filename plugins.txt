@@ -1,0 +1,11 @@
+build-timeout:latest
+cloudbees-folder:latest
+configuration-as-code:latest
+credentials-binding:latest
+git:latest
+github-branch-source:latest
+ldap:latest
+pipeline-github-lib:latest
+pipeline-stage-view:latest
+timestamper:latest
+ws-cleanup:latest
