@@ -10,7 +10,7 @@ jobs:
 
   build:
     name: Build, Push And Deploy Image
-    runs-on: windows-latest
+    runs-on: linux-latest
     steps:
     - uses: actions/checkout@v3
       with:
@@ -38,7 +38,7 @@ jobs:
         docker push mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
         docker push mharris867/jenkinsmasteraci:latest
     - name: Set Release Candidate Variables
-      shell: powershell
+      shell: pwsh
       run: |
         if ($env:GITHUB_REF_NAME -Like '*master*' -or $env:GITHUB_REF_NAME -Like '*main*' ) {$prerelease = "false"}
         else {$prerelease = "true"}
@@ -57,7 +57,7 @@ jobs:
         commit: ${{ env.GITHUB_SHA }}
         
     - name: List Variables
-      shell: powershell
+      shell: pwsh
       run: |
        Write-Host "Listing Available Environment Variables"
        get-childitem "env:"
@@ -71,7 +71,7 @@ jobs:
         
     # Create storage account
     - name: "Create storage account"
-      shell: powershell
+      shell: pwsh
       run: |
         $storage_account_name = ("${{ env.GitVersion_EscapedBranchName }}" + "acistorage").Replace("-","")
         az storage account create -n $storage_account_name -g jenkinsaci --sku Premium_LRS --kind FileStorage
@@ -103,12 +103,12 @@ jobs:
         images: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
     
     - name: 'Mount Storage'
-      shell: powershell
+      shell: pwsh
       run: az webapp config storage-account add --resource-group jenkinsaci --name jenkinsaci --storage-type AzureFiles --custom-id "${{ env.GitVersion_EscapedBranchName }}files" --share-name pull9merge --account-name ${{ env.storage_account_name }} --access-key ${{ env.storage_account_key }} --mount-path C:\ProgramData\jenkins\jenkinshome
       
     - name: "Put Link To Deployment In Comments"
       if: github.event_name == 'pull_request'
-      shell: powershell
+      shell: pwsh
       run: |
         $fqdn = (az container show -g jenkinsaci -n jenkinsaci --query 'ipAddress.fqdn' -o tsv)
         Add-Content -Path $env:GITHUB_ENV -Value "fqdn=$fqdn"
