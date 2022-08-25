@@ -88,7 +88,7 @@ jobs:
         name: ${{ env.GitVersion_EscapedBranchName }}
         dns-name-label: ${{ env.GitVersion_EscapedBranchName }}
         image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
-        os-type: Windows
+        os-type: Linux
         location: 'east us'
         ports: 8080
         azure-file-volume-share-name: ${{ env.GitVersion_EscapedBranchName }}files
