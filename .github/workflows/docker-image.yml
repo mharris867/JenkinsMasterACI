@@ -79,7 +79,10 @@ jobs:
         Add-Content -Path $env:GITHUB_ENV -Value "storage_account_name=$storage_account_name"
         Add-Content -Path $env:GITHUB_ENV -Value "storage_account_key=$storage_account_key"
         echo "::add-mask::$storage_account_key"
-      
+        
+    - name: 'Create File Share'
+      shell: pwsh
+      run:  az storage share create --account-name ${{ env.storage_account_name }} --account-key ${{ env.storage_account_key }} --name ${{ env.GitVersion_EscapedBranchName }}files
         
     - name: 'Create Jenkins Master in ACI'
       uses: 'azure/aci-deploy@v1'
