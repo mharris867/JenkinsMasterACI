@@ -93,7 +93,7 @@ jobs:
         ports: 8080
         azure-file-volume-share-name: ${{ env.GitVersion_EscapedBranchName }}files
         azure-file-volume-account-name: ${{ env.storage_account_name }}
-        azure-file-volume-account-key: ${{ secrets.storage_account_key }}
+        azure-file-volume-account-key: ${{ env.storage_account_key }}
         azure-file-volume-mount-path: /var/jenkins_home
 
     - name: "Put Link To Deployment In Comments"
