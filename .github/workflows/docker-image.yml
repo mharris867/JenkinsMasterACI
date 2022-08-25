@@ -34,7 +34,7 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
     
     - name: Build the Docker image
-      run: docker build . --file ${{ runner.os }}/Dockerfile --tag mharris867/jenkinsmasteraci:${{ runner.os }}${{ env.GITVERSION_SEMVER }}
+      run: docker build . --file ${{ runner.os }}/Dockerfile --tag mharris867/jenkinsmasteraci:${{ runner.os }}${{ env.GITVERSION_SEMVER }} --tag mharris867/jenkinsmasteraci:latest
       
     - name: Push Docker Image Version
       run: | 
