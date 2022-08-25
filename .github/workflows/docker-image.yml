@@ -34,11 +34,15 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
     
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }} --tag mharris867/jenkinsmasteraci:latest
+      run: docker build ${{ runner.os }} --file Dockerfile --tag mharris867/jenkinsmasteraci:${{ runner.os }}${{ env.GITVERSION_SEMVER }}
       
-    - name: Push Docker Image
+    - name: Push Docker Image Version
       run: | 
-        docker push mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
+        docker push mharris867/jenkinsmasteraci:${{ runner.os }}${{ env.GITVERSION_SEMVER }}
+
+    - name: Push Docker Image Latest
+      if: startsWith(matrix.os, 'windows') != true
+      run: | 
         docker push mharris867/jenkinsmasteraci:latest
         
     - name: Set Release Candidate Variables
@@ -88,21 +92,33 @@ jobs:
       shell: pwsh
       run:  az storage share create --account-name ${{ env.storage_account_name }} --account-key ${{ env.storage_account_key }} --name ${{ env.GitVersion_EscapedBranchName }}files
         
-    - name: 'Create Jenkins Master in ACI'
+    - name: 'Create Jenkins Master in ACI Linux'
+      if: startsWith(matrix.os, 'windows') != true
       uses: 'azure/aci-deploy@v1'
       with:
         resource-group: jenkinsaci
-        name: ${{ env.GitVersion_EscapedBranchName }}
-        dns-name-label: ${{ env.GitVersion_EscapedBranchName }}
-        image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
+        name: ${{ runner.os }}${{ env.GitVersion_EscapedBranchName }}
+        dns-name-label: ${{ runner.os }}${{ env.GitVersion_EscapedBranchName }}
+        image: mharris867/jenkinsmasteraci:${{ runner.os }}${{ env.GITVERSION_SEMVER }}
         os-type: ${{ runner.os }}
         location: 'east us'
         ports: 8080
-        if: startsWith(matrix.os, 'windows') != true
         azure-file-volume-share-name: ${{ env.GitVersion_EscapedBranchName }}files
         azure-file-volume-account-name: ${{ env.storage_account_name }}
         azure-file-volume-account-key: ${{ env.storage_account_key }}
         azure-file-volume-mount-path: /var/jenkins_home
+        
+    - name: 'Create Jenkins Master in ACI Windows'
+      if: startsWith(matrix.os, 'windows') == true
+      uses: 'azure/aci-deploy@v1'
+      with:
+        resource-group: jenkinsaci
+        name: ${{ runner.os }}${{ env.GitVersion_EscapedBranchName }}
+        dns-name-label: ${{ runner.os }}${{ env.GitVersion_EscapedBranchName }}
+        image: mharris867/jenkinsmasteraci:${{ runner.os }}${{ env.GITVERSION_SEMVER }}
+        os-type: ${{ runner.os }}
+        location: 'east us'
+        ports: 8080
 
     - name: "Put Link To Deployment In Comments"
       if: github.event_name == 'pull_request'
