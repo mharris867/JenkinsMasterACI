@@ -10,7 +10,7 @@ jobs:
 
   build:
     name: Build, Push And Deploy Image
-    runs-on: linux-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
       with:
@@ -81,36 +81,26 @@ jobs:
         echo "::add-mask::$storage_account_key"
       
         
-#     - name: 'Create Jenkins Master in ACI'
-#       uses: 'azure/aci-deploy@v1'
-#       with:
-#         resource-group: jenkinsaci
-#         name: ${{ env.GitVersion_EscapedBranchName }}
-#         dns-name-label: ${{ env.GitVersion_EscapedBranchName }}
-#         image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
-#         os-type: Windows
-#         location: 'east us'
-#         ports: 8080
-#         azure-file-volume-share-name: ${{ env.GitVersion_EscapedBranchName }}files
-#         azure-file-volume-account-name: ${{ env.storage_account_name }}
-#         azure-file-volume-account-key: ${{ secrets.storage_account_key }}
-#         azure-file-volume-mount-path: C:\ProgramData\jenkins\jenkinshome
-
-    - name: 'Create Jenkins Master in Webapp Container'
-      uses: 'azure/webapps-deploy@v2'
+    - name: 'Create Jenkins Master in ACI'
+      uses: 'azure/aci-deploy@v1'
       with:
-        app-name: jenkinsaci
-        images: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
-    
-    - name: 'Mount Storage'
-      shell: pwsh
-      run: az webapp config storage-account add --resource-group jenkinsaci --name jenkinsaci --storage-type AzureFiles --custom-id "${{ env.GitVersion_EscapedBranchName }}files" --share-name pull9merge --account-name ${{ env.storage_account_name }} --access-key ${{ env.storage_account_key }} --mount-path C:\ProgramData\jenkins\jenkinshome
-      
+        resource-group: jenkinsaci
+        name: ${{ env.GitVersion_EscapedBranchName }}
+        dns-name-label: ${{ env.GitVersion_EscapedBranchName }}
+        image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
+        os-type: Windows
+        location: 'east us'
+        ports: 8080
+        azure-file-volume-share-name: ${{ env.GitVersion_EscapedBranchName }}files
+        azure-file-volume-account-name: ${{ env.storage_account_name }}
+        azure-file-volume-account-key: ${{ secrets.storage_account_key }}
+        azure-file-volume-mount-path: /var/jenkins_home
+
     - name: "Put Link To Deployment In Comments"
       if: github.event_name == 'pull_request'
       shell: pwsh
       run: |
-        $fqdn = (az container show -g jenkinsaci -n jenkinsaci --query 'ipAddress.fqdn' -o tsv)
+        $fqdn = (az container show -g jenkinsaci -n ${{ env.GitVersion_EscapedBranchName }} --query 'ipAddress.fqdn' -o tsv)
         Add-Content -Path $env:GITHUB_ENV -Value "fqdn=$fqdn"
         Write-Host "link to deployment: $fqdn"    
         
