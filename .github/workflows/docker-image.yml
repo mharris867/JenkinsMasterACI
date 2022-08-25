@@ -52,6 +52,9 @@ jobs:
         else {$prerelease = "true"}
         Add-Content -Path $env:GITHUB_ENV -Value "prerelease=$prerelease"
         Write-Host "Pre-release Set To: $prerelease"
+        $RUNNER_OS_TOLOWER = $env:RUNNER_OS.ToLower()
+        Add-Content -Path $env:GITHUB_ENV -Value "RUNNER_OS_TOLOWER=$RUNNER_OS_TOLOWER"
+        Write-Host "RUNNER_OS_TOLOWER Set To: $RUNNER_OS_TOLOWER"
         
     - name: Create Release
       uses: ncipollo/release-action@v1
@@ -97,8 +100,8 @@ jobs:
       uses: 'azure/aci-deploy@v1'
       with:
         resource-group: jenkinsaci
-        name: ${{ runner.os }}${{ env.GitVersion_EscapedBranchName }}
-        dns-name-label: ${{ runner.os }}${{ env.GitVersion_EscapedBranchName }}
+        name: ${{ env.RUNNER_OS_TOLOWER }}${{ env.GitVersion_EscapedBranchName }}
+        dns-name-label: ${{ env.RUNNER_OS_TOLOWER }}${{ env.GitVersion_EscapedBranchName }}
         image: mharris867/jenkinsmasteraci:${{ runner.os }}${{ env.GITVERSION_SEMVER }}
         os-type: ${{ runner.os }}
         location: 'east us'
@@ -113,8 +116,8 @@ jobs:
       uses: 'azure/aci-deploy@v1'
       with:
         resource-group: jenkinsaci
-        name: ${{ runner.os }}${{ env.GitVersion_EscapedBranchName }}
-        dns-name-label: ${{ runner.os }}${{ env.GitVersion_EscapedBranchName }}
+        name: ${{ env.RUNNER_OS_TOLOWER }}${{ env.GitVersion_EscapedBranchName }}
+        dns-name-label: ${{ env.RUNNER_OS_TOLOWER }}${{ env.GitVersion_EscapedBranchName }}
         image: mharris867/jenkinsmasteraci:${{ runner.os }}${{ env.GITVERSION_SEMVER }}
         os-type: ${{ runner.os }}
         location: 'east us'
@@ -124,7 +127,7 @@ jobs:
       if: github.event_name == 'pull_request'
       shell: pwsh
       run: |
-        $fqdn = (az container show -g jenkinsaci -n ${{ env.GitVersion_EscapedBranchName }} --query 'ipAddress.fqdn' -o tsv) + ":8080"
+        $fqdn = (az container show -g jenkinsaci -n ${{ env.RUNNER_OS_TOLOWER }}${{ env.GitVersion_EscapedBranchName }} --query 'ipAddress.fqdn' -o tsv) + ":8080"
         Add-Content -Path $env:GITHUB_ENV -Value "fqdn=$fqdn"
         Write-Host "link to deployment: $fqdn"    
         
