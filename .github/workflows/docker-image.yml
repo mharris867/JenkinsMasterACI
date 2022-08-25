@@ -10,7 +10,10 @@ jobs:
 
   build:
     name: Build, Push And Deploy Image
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
       with:
@@ -37,6 +40,7 @@ jobs:
       run: | 
         docker push mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
         docker push mharris867/jenkinsmasteraci:latest
+        
     - name: Set Release Candidate Variables
       shell: pwsh
       run: |
@@ -91,9 +95,10 @@ jobs:
         name: ${{ env.GitVersion_EscapedBranchName }}
         dns-name-label: ${{ env.GitVersion_EscapedBranchName }}
         image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
-        os-type: Linux
+        os-type: ${{ runner.os }}
         location: 'east us'
         ports: 8080
+        if: startsWith(matrix.os, 'windows') != true
         azure-file-volume-share-name: ${{ env.GitVersion_EscapedBranchName }}files
         azure-file-volume-account-name: ${{ env.storage_account_name }}
         azure-file-volume-account-key: ${{ env.storage_account_key }}
@@ -103,7 +108,7 @@ jobs:
       if: github.event_name == 'pull_request'
       shell: pwsh
       run: |
-        $fqdn = (az container show -g jenkinsaci -n ${{ env.GitVersion_EscapedBranchName }} --query 'ipAddress.fqdn' -o tsv)
+        $fqdn = (az container show -g jenkinsaci -n ${{ env.GitVersion_EscapedBranchName }} --query 'ipAddress.fqdn' -o tsv) + ":8080"
         Add-Content -Path $env:GITHUB_ENV -Value "fqdn=$fqdn"
         Write-Host "link to deployment: $fqdn"    
         
