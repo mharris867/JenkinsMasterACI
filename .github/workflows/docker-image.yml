@@ -110,7 +110,7 @@ jobs:
       if: github.event_name == 'pull_request'
       shell: powershell
       run: |
-        $fqdn = (az container show -g jenkinsaci -n ${{ env.GitVersion_EscapedBranchName }} --query 'ipAddress.fqdn' -o tsv)
+        $fqdn = (az container show -g jenkinsaci -n jenkinsaci --query 'ipAddress.fqdn' -o tsv)
         Add-Content -Path $env:GITHUB_ENV -Value "fqdn=$fqdn"
         Write-Host "link to deployment: $fqdn"    
         
