@@ -63,7 +63,7 @@ jobs:
         generateReleaseNotes: "true"
         prerelease: ${{ env.prerelease }}
         tag: ${{ env.GITVERSION_SEMVER }}
-        name: ${{ env.GITVERSION_INFORMATIONALVERSION }}
+        name: ${{ runner.os }}-${{ env.GITVERSION_INFORMATIONALVERSION }}
         owner: ${{ env.GITHUB_REPOSITORY_OWNER }}
         commit: ${{ env.GITHUB_SHA }}
         
@@ -82,6 +82,7 @@ jobs:
         
     # Create storage account
     - name: "Create storage account"
+      if: startsWith(matrix.os, 'windows') != true
       shell: pwsh
       run: |
         $storage_account_name = ("${{ env.GitVersion_EscapedBranchName }}" + "acistorage").Replace("-","")
@@ -92,6 +93,7 @@ jobs:
         echo "::add-mask::$storage_account_key"
         
     - name: 'Create File Share'
+      if: startsWith(matrix.os, 'windows') != true
       shell: pwsh
       run:  az storage share create --account-name ${{ env.storage_account_name }} --account-key ${{ env.storage_account_key }} --name ${{ env.GitVersion_EscapedBranchName }}files
         
