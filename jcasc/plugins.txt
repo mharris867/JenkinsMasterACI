@@ -9,3 +9,4 @@ pipeline-github-lib:latest
 pipeline-stage-view:latest
 timestamper:latest
 ws-cleanup:latest
+azure-container-agents:latest
