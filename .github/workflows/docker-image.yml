@@ -108,7 +108,7 @@ jobs:
         image: mharris867/jenkinsmasteraci:${{ runner.os }}${{ env.GITVERSION_SEMVER }}
         os-type: ${{ runner.os }}
         location: 'east us'
-        ports: 8080
+        ports: 8080 5000
         azure-file-volume-share-name: ${{ env.GitVersion_EscapedBranchName }}files
         azure-file-volume-account-name: ${{ env.storage_account_name }}
         azure-file-volume-account-key: ${{ env.storage_account_key }}
@@ -124,7 +124,7 @@ jobs:
         image: mharris867/jenkinsmasteraci:${{ runner.os }}${{ env.GITVERSION_SEMVER }}
         os-type: ${{ runner.os }}
         location: 'east us'
-        ports: 8080
+        ports: 8080 5000
 
     - name: "Put Link To Deployment In Comments"
       if: github.event_name == 'pull_request'
