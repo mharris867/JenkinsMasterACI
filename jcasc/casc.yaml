@@ -1,5 +1,38 @@
 jenkins:
+  agentProtocols:
+  - "JNLP4-connect"
+  - "Ping"
+  clouds:
+  - aci:
+      credentialsId: "e238e867-658c-4446-94e7-9572e5077210"
+      name: "Aci"
+      resourceGroup: "jenkinsaci"
+      templates:
+      - command: "jenkins-agent -url ^${rootUrl} ^${secret} ^${nodeName}"
+        cpu: "1"
+        image: "jenkins/inbound-agent"
+        label: "linux"
+        memory: "1.5"
+        name: "linux"
+        osType: "Linux"
+        retentionStrategy:
+          containerIdle:
+            idleMinutes: 10
+        rootFs: "/home/jenkins/agent"
+        timeout: 10
+      - command: "jenkins-agent -Url ^${rootUrl} -Secret ^${secret} -Name ^${nodeName}"
+        cpu: "1"
+        image: "jenkins/inbound-agent:windowsservercore-ltsc2019"
+        label: "windows"
+        memory: "1.5"
+        name: "windows"
+        osType: "Windows"
+        retentionStrategy:
+          containerIdle:
+            idleMinutes: 2880
+        rootFs: "C:/Jenkins/agent"
+        timeout: 1440
   numExecutors: 0
 unclassified:
   location:
-    url: http://127.0.0.1:8080/
+    url: http://linux-pull-9-merge.eastus.azurecontainer.io:8080/
