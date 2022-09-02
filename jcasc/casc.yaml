@@ -35,4 +35,4 @@ jenkins:
   numExecutors: 0
 unclassified:
   location:
-    url: ${JENKINS_URL}
+    url: http://linux-pull-9-merge.eastus.azurecontainer.io:8080/
