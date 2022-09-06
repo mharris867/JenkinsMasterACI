@@ -4,7 +4,7 @@ jenkins:
   - "Ping"
   clouds:
   - aci:
-      credentialsId: "e238e867-658c-4446-94e7-9572e5077210"
+      credentialsId: "8ffef2de-b3af-41be-8096-fc0d436327b1"
       name: "Aci"
       resourceGroup: "jenkinsaci"
       templates:
@@ -20,18 +20,19 @@ jenkins:
             idleMinutes: 10
         rootFs: "/home/jenkins/agent"
         timeout: 10
-      - command: "jenkins-agent -Url ^${rootUrl} -Secret ^${secret} -Name ^${nodeName}"
+      - command: "powershell.exe -f C:/ProgramData/Jenkins/jenkins-agent.ps1 -url\
+          \ ^${rootUrl} -Secret ^${secret} -Name ^${nodeName}"
         cpu: "1"
-        image: "jenkins/inbound-agent:windowsservercore-ltsc2019"
+        image: "jenkins/inbound-agent:jdk11-windowsservercore-ltsc2019"
         label: "windows"
         memory: "1.5"
         name: "windows"
         osType: "Windows"
         retentionStrategy:
           containerIdle:
-            idleMinutes: 2880
+            idleMinutes: 500
         rootFs: "C:/Jenkins/agent"
-        timeout: 1440
+        timeout: 30
   numExecutors: 0
 unclassified:
   location:
