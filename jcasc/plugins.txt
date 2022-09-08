@@ -10,3 +10,4 @@ pipeline-stage-view:latest
 timestamper:latest
 ws-cleanup:latest
 azure-container-agents:latest
+pipeline-model-definition:latest
