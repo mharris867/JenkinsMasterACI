@@ -34,6 +34,9 @@ jenkins:
         rootFs: "C:/Jenkins/agent"
         timeout: 30
   numExecutors: 0
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: true
 unclassified:
   location:
     url: http://linux-pull-9-merge.eastus.azurecontainer.io:8080/
