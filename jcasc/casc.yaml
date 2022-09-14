@@ -38,5 +38,7 @@ jenkins:
     standard:
       excludeClientIPFromCrumb: true
 unclassified:
+  gitHubConfiguration:
+    apiRateLimitChecker: ThrottleOnOver
   location:
     url: "http://${RUNNER_OS_TOLOWER}-${GitVersion_EscapedBranchName}.eastus.azurecontainer.io:8080/"
