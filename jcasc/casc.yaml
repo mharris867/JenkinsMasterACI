@@ -39,4 +39,4 @@ jenkins:
       excludeClientIPFromCrumb: true
 unclassified:
   location:
-    url: "http://linux-pull-9-merge.eastus.azurecontainer.io:8080/"
+    url: "http://${RUNNER_OS_TOLOWER}-${GitVersion_EscapedBranchName}.eastus.azurecontainer.io:8080/"
