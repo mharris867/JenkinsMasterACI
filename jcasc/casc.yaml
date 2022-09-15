@@ -23,7 +23,7 @@ jenkins:
       - command: "powershell.exe -f C:/ProgramData/Jenkins/jenkins-agent.ps1 -url\
           \ ^${rootUrl} -Secret ^${secret} -Name ^${nodeName}"
         cpu: "1"
-        image: "jenkins/inbound-agent:jdk11-windowsservercore-ltsc2019"
+        image: "mharris867/jenkinsmsbuildagent"
         label: "windows"
         memory: "1.5"
         name: "windows"
