@@ -75,6 +75,7 @@ jobs:
        Write-Host "Listing Available Environment Variables"
        get-childitem "env:"
        Write-Host "------------- End of Variable List -------------------" 
+       Get-Date
        
       # log into Azure
     - name: "Login via Azure CLI"
