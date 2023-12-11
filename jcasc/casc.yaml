@@ -1,0 +1,44 @@
+jenkins:
+  agentProtocols:
+  - "JNLP4-connect"
+  - "Ping"
+  clouds:
+  - aci:
+      credentialsId: "8ffef2de-b3af-41be-8096-fc0d436327b1"
+      name: "Aci"
+      resourceGroup: "jenkinsaci"
+      templates:
+      - command: "jenkins-agent -url ^${rootUrl} ^${secret} ^${nodeName}"
+        cpu: "1"
+        image: "jenkins/inbound-agent"
+        label: "linux"
+        memory: "1.5"
+        name: "linux"
+        osType: "Linux"
+        retentionStrategy:
+          containerIdle:
+            idleMinutes: 10
+        rootFs: "/home/jenkins/agent"
+        timeout: 10
+      - command: "powershell.exe -f C:/ProgramData/Jenkins/jenkins-agent.ps1 -url\
+          \ ^${rootUrl} -Secret ^${secret} -Name ^${nodeName}"
+        cpu: "1"
+        image: "mharris867/jenkinsmsbuildagent"
+        label: "windows"
+        memory: "1.5"
+        name: "windows"
+        osType: "Windows"
+        retentionStrategy:
+          containerIdle:
+            idleMinutes: 500
+        rootFs: "C:/Jenkins/agent"
+        timeout: 30
+  numExecutors: 0
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: true
+unclassified:
+  gitHubConfiguration:
+    apiRateLimitChecker: ThrottleOnOver
+  location:
+    url: "http://${RUNNER_OS_TOLOWER}-${GitVersion_EscapedBranchName}.eastus.azurecontainer.io:8080/"

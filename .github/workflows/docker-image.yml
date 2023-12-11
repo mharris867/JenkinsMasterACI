@@ -1,94 +1,43 @@
-name: Docker Image CI
+name: Upload Release Asset
 
 on:
   push:
     branches: [ "master", "develop" ]
   pull_request:
     branches: [ "master", "develop" ]
-
 jobs:
-
   build:
-    name: Build, Push And Deploy Image
-    runs-on: windows-latest
+    name: Upload Release Asset
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0 # required by gitversion
-        
-    - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.13
-      with:
-        versionSpec: '5.x'
-        
-    - name: Determine Version
-      uses: gittools/actions/gitversion/execute@v0.9.13
-      
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-    
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
-      
-    - name: Push Docker Image
-      run: docker push mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set Release Candidate Variables
-      shell: powershell
-      run: |
-        if ($env:GITHUB_REF_NAME -Like '*master*' -or $env:GITHUB_REF_NAME -Like '*main*' ) {$prerelease = "false"}
-        else {$prerelease = "true"}
-        Add-Content -Path $env:GITHUB_ENV -Value "prerelease=$prerelease"
-        Write-Host "Pre-release Set To: $prerelease"
-        
-    - name: Create Release
-      uses: ncipollo/release-action@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        generateReleaseNotes: "true"
-        prerelease: ${{ env.prerelease }}
-        tag: ${{ env.GITVERSION_SEMVER }}
-        name: ${{ env.GITVERSION_INFORMATIONALVERSION }}
-        owner: ${{ env.GITHUB_REPOSITORY_OWNER }}
-        commit: ${{ env.GITHUB_SHA }}
-        
-    - name: List Variables
-      shell: powershell
-      run: |
-       Write-Host "Listing Available Environment Variables"
-       get-childitem "env:"
-       Write-Host "------------- End of Variable List -------------------" 
-
-      # log into Azure
-    - name: "Login via Azure CLI"
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
-    - name: 'Create Jenkins Master in ACI'
-      uses: 'azure/aci-deploy@v1'
-      with:
-        resource-group: jenkinsaci
-        name: ${{ env.GitVersion_EscapedBranchName }}
-        dns-name-label: ${{ env.GitVersion_EscapedBranchName }}
-        image: mharris867/jenkinsmasteraci:${{ env.GITVERSION_SEMVER }}
-        os-type: Windows
-        location: 'east us'
-        ports: 8080
-      
-    - name: "Put Link To Deployment In Comments"
-      if: github.event_name == 'pull_request'
-      shell: powershell
-      run: |
-        $fqdn = (az container show -g jenkinsaci -n ${{ env.GitVersion_EscapedBranchName }} --query 'ipAddress.fqdn' -o tsv) + ":8080"
-        Add-Content -Path $env:GITHUB_ENV -Value "fqdn=$fqdn"
-        Write-Host "link to deployment: $fqdn"    
-        
-    - uses: jldeen/add-review-url@releases/v0 
-      if: github.event_name == 'pull_request'
-      with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}  
-          fqdn: ${{ env.fqdn }}
+      - name: Set up secret file
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+        run: |
+          echo $AZURE_CREDENTIALS >> README.md
+      - name: Build project # This would actually build your project, using zip for an example artifact
+        run: |
+          zip --junk-paths my-artifact README.md
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: 0.0.1
+          release_name: Release 0.0.1
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./my-artifact.zip
+          asset_name: my-artifact.zip
+          asset_content_type: application/zip
