@@ -12,7 +12,8 @@ jobs:
     name: Build, Push And Deploy Image
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2019]
+        #os: [ubuntu-latest, windows-2019]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
